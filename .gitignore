@@ -10,3 +10,5 @@ Thumbs.db
 *.pdf
 yarn.lock
 npm-debug.log*
+
+.eslintrc.json
