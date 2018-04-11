@@ -1,11 +1,15 @@
 /* eslint max-statements: ["error", 200, { "ignoreTopLevelFunctions": true }]*/
+/* eslint linebreak-style: ["error", "unix"] */
+/* eslint max-len: ["error", { "code": 100 }] */
 
 'use strict';
 
+var mapPin = document.querySelector('.map__pin');
+
 var adsList = adsMaker(),
-    mapPins = document.querySelector('.map__pins'),
-    similarMapCardTemplate = document.querySelector('template').content.
-      querySelector('.map__card');
+    map     = document.querySelector('section.map'),
+    mapPins = document.querySelector('.map__pins');
+
 document.querySelector('.map').classList.remove('map--faded');
 
 function getRandInt(min, max) {
@@ -14,11 +18,13 @@ function getRandInt(min, max) {
 
 function adsMaker() {
   var adsArr = [],
-      apartmentTypes = ['flat','house','bungalo'],
+      apartmentTypes = ['flat', 'house', 'bungalo'],
       ckeckinTimes = ['12:00', '13:00', '14:00'],
-      featuresList = ["wifi", "dishwasher",
-                  "parking", "washer",
-                  "elevator","conditioner"],
+      featuresList = [
+        "wifi", "dishwasher",
+        "parking", "washer",
+        "elevator", "conditioner"
+      ],
       offerTitles = [
         "Большая уютная квартира",
         "Маленькая неуютная квартира",
@@ -54,21 +60,41 @@ function adsMaker() {
       }
     };
     adsItem.offer.address = `${adsItem.location.x}, ${adsItem.location.y}`;
-    adsItem.offer.guests = getRandInt(0, 3) * adsItem.offer.rooms;
+    adsItem.offer.guests = getRandInt(1, 3) * adsItem.offer.rooms;
     adsArr.push(adsItem);
   }
 
   return adsArr;
 }
 
+function mapPinsRender() {
+  var fragment = document.createDocumentFragment(),
+      similarMapPinItem = document.querySelector('template').content.
+    querySelector('.map__pin');
+
+  adsList.forEach((el) => {
+    var mapPinBtn = similarMapPinItem.cloneNode(true),
+        mapPinIcon = mapPinBtn.querySelector('img');
+
+    mapPinBtn.style.left = `${el.location.x - mapPinIcon.style.width/2}px`;
+    mapPinBtn.style.top = `${el.location.y - mapPinIcon.style.height}px`;
+    mapPinIcon.setAttribute('src', el.author.avatar);
+    fragment.appendChild(mapPinBtn);
+  });
+
+  mapPins.appendChild(fragment);
+}
+
 function adsRender() {
-  var fragment = document.createDocumentFragment();
+  var fragment = document.createDocumentFragment(),
+      similarMapCardTemplate = document.querySelector('template').content.
+    querySelector('.map__card');
 
   adsList.forEach((el) => {
     var mapCardItem = similarMapCardTemplate.cloneNode(true);
     mapCardItem.querySelector('h3').textContent = el.offer.title;
     mapCardItem.querySelector('h3 ~ p').textContent = el.offer.address;
-    mapCardItem.querySelector('.popup__price').textContent =
+    mapCardItem.querySelector('.popup__price').innterHTML =
       `${el.offer.price}&#x20bd;/ночь`;
     mapCardItem.querySelector('h4').textContent = el.offer.type;
     mapCardItem.querySelector('h4 ~ p').textContent = `${el.offer.rooms} для ${el.offer.guests}`;
@@ -87,7 +113,8 @@ function adsRender() {
     fragment.appendChild(mapCardItem);
   });
 
-  mapPins.appendChild(fragment);
+  map.appendChild(fragment);
 }
 
+mapPinsRender();
 adsRender();
