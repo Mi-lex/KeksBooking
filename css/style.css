@@ -348,7 +348,7 @@ textarea:focus {
   padding: 10px 10px 20px;
   box-sizing: border-box;
 
-  z-index: 2;
+  z-index: 12;
 
   font-size: 14px;
 }
