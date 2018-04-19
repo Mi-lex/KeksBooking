@@ -17,56 +17,7 @@
 }());
 
 (function mapCardRender() {
-  function getMapCardList() {
-    var mapCardArr = [],
-        apartmentTypeList = ['flat', 'house', 'bungalo'],
-        ckeckinTimeList = ['12:00', '13:00', '14:00'],
-        featuresList = [
-          "wifi", "dishwasher",
-          "parking", "washer",
-          "elevator", "conditioner"
-        ],
-        offerTitleList = [
-          "Большая уютная квартира",
-          "Маленькая неуютная квартира",
-          "Огромный прекрасный дворец",
-          "Маленький ужасный дворец",
-          "Красивый гостевой домик",
-          "Некрасивый негостеприимный домик",
-          "Уютное бунгало далеко от моря",
-          "Неуютное бунгало по колено в воде"
-        ];
-
-    for (let i = 0; i < 8; i++) {
-      let mapCardItem = {
-        author: {
-          avatar: `img/avatars/user0${i + 1}.png`
-        },
-        location: {
-          x: window.getRandInt(300, 900),
-          y: window.getRandInt(100, 500)
-        },
-        offer: {
-          checkin: window.getRandItem(ckeckinTimeList),
-          checkout: window.getRandItem(ckeckinTimeList),
-          description: 'Absense',
-          features: featuresList.slice(0, window.getRandInt(1, 5)),
-          photos: [],
-          price: window.getRandInt(1000, 1000000),
-          rooms: window.getRandInt(1, 5),
-          title: offerTitleList[i],
-          type: i < 2 ? apartmentTypeList[0]:
-                i > 5 ? apartmentTypeList[2]:
-                        apartmentTypeList[1]
-        }
-      };
-      mapCardItem.offer.address = `${mapCardItem.location.x}, ${mapCardItem.location.y}`;
-      mapCardItem.offer.guests = window.getRandInt(1, 3) * mapCardItem.offer.rooms;
-      mapCardArr.push(mapCardItem);
-    }
-
-    return mapCardArr;
-  }
+  var url = 'https://js.dump.academy/keksobooking/data';
 
   function renderMapCards(mapCardList) {
     var fragment = document.createDocumentFragment(),
@@ -95,42 +46,86 @@
       mapCardItem.querySelector('.popup__features ~ p').textContent = el.offer.description;
       mapCardItem.querySelector('.popup__avatar').setAttribute('src', el.author.avatar);
       mapCardItem.classList.add('hidden');
+      mapCardItem.setAttribute('data-pinlocation', `${el.location.x}, ${el.location.y}`);
       fragment.appendChild(mapCardItem);
     });
 
     window.map.appendChild(fragment);
   }
 
-  renderMapCards(getMapCardList());
+  function onError(message) {
+    console.error(message);
+  }
+
+  function onSuccess(mapCardList) {
+    renderMapCards(mapCardList);
+    mapPinRender();
+    mapFeaturesHandlers();
+  }
+
+  window.load(url, onSuccess, onError);
 }());
 
-(function mapPinRender() {
+function mapPinRender() {
   var mapCardList = window.map.querySelectorAll('.map__card'),
       mapPinsContainer = window.map.querySelector('.map__pins');
 
   function renderMapPins() {
     var fragment = document.createDocumentFragment(),
         similarMapPinItem = document.querySelector('template').content.
-      querySelector('.map__pin');
+          querySelector('.map__pin');
 
     mapCardList.forEach((el, i) => {
-      var mapPinBtn = similarMapPinItem.cloneNode(true),
-          mapPinIcon = mapPinBtn.querySelector('img'),
-          pinCoords = el.querySelector('h3 ~ p').textContent.split(', '),
+      var mapPin = similarMapPinItem.cloneNode(true),
+          mapPinIcon = mapPin.querySelector('img'),
+          pinCoords = el.getAttribute('data-pinlocation').split(', '),
           pinAvatar = el.querySelector('img').getAttribute('src');
-      mapPinBtn.style.left = `${pinCoords[0] - mapPinIcon.style.width / 2}px`;
-      mapPinBtn.style.top = `${pinCoords[1] - mapPinIcon.style.height}px`;
-      mapPinBtn.classList.add('hidden');
-      mapPinBtn.setAttribute('data-popup-card', i);
+      mapPin.style.left = `${pinCoords[0] - mapPinIcon.style.width / 2}px`;
+      mapPin.style.top = `${pinCoords[1] - mapPinIcon.style.height}px`;
+      mapPin.classList.add('hidden');
+      mapPin.setAttribute('data-popup-card', i);
       mapPinIcon.setAttribute('src', pinAvatar);
-      fragment.appendChild(mapPinBtn);
+      fragment.appendChild(mapPin);
     });
 
     mapPinsContainer.appendChild(fragment);
   }
 
   renderMapPins();
-}());
+}
+
+function mapFeaturesHandlers() {
+    var mapCardList = window.map.querySelectorAll('.map__card');
+
+  function showPopUpCard(cardNumb, mapPin) {
+    closePopupCard();
+    mapPin.classList.add('map__pin--active');
+    mapCardList[cardNumb].classList.remove('hidden');
+  }
+
+  function closePopupCard() {
+    if (window.map.querySelector('.map__pin--active')) {
+      window.map.querySelector('.map__pin--active').classList.remove('map__pin--active');
+    }
+    mapCardList.forEach((el) => {
+      el.classList.add('hidden');
+    });
+  }
+
+  function onMapClickHandler(e) {
+    if (e.target.closest('.map__pin') && !e.target.closest('.map__pin--main')) {
+      let currentMapPin = e.target.closest('.map__pin'),
+      cardNumb = e.target.closest('.map__pin').getAttribute('data-popup-card');
+      showPopUpCard(cardNumb, currentMapPin);
+    }
+
+    if (e.target.closest('.popup__close')) {
+      closePopupCard();
+    }
+  }
+
+  window.map.addEventListener('click', onMapClickHandler);
+}
 
 (function mainPinHanlder() {
   var mapMainPin = window.map.querySelector('.map__pin--main'),
@@ -161,6 +156,7 @@
   function onMainPinMouseupHandler() {
     activeMap();
     activeForm();
+    mapMainPin.removeEventListener('mouseup', onMainPinMouseupHandler);
   }
 
   function onMainPinMousedownHandler (ev) {
@@ -171,7 +167,7 @@
           y: ev.clientY - mainPinCoords.top - mapMainPin.offsetHeight / 2
         };
     mapMainPin.style.position = 'absolute';
-    mapMainPin.style.zIndex = 100;
+    mapMainPin.style.zIndex = 10;
 
     function movePinAt(moveEvent) {
       var newPinCoords = {
@@ -212,37 +208,4 @@
   }
 
   mapMainPin.addEventListener('mouseup', onMainPinMouseupHandler);
-}());
-
-(function mapFeaturesHandlers() {
-    var mapCardList = window.map.querySelectorAll('.map__card');
-
-  function showPopUpCard(cardNumb, mapPin) {
-    closePopupCard();
-    mapPin.classList.add('map__pin--active');
-    mapCardList[cardNumb].classList.remove('hidden');
-  }
-
-  function closePopupCard() {
-    if (window.map.querySelector('.map__pin--active')) {
-      window.map.querySelector('.map__pin--active').classList.remove('map__pin--active');
-    }
-    mapCardList.forEach((el) => {
-      el.classList.add('hidden');
-    });
-  }
-
-  function onMapClickHandler(e) {
-    if (e.target.closest('.map__pin') && !e.target.closest('.map__pin--main')) {
-      let currentMapPin = e.target.closest('.map__pin'),
-      cardNumb = e.target.closest('.map__pin').getAttribute('data-popup-card');
-      showPopUpCard(cardNumb, currentMapPin);
-    }
-
-    if (e.target.closest('.popup__close')) {
-      closePopupCard();
-    }
-  }
-
-  window.map.addEventListener('click', onMapClickHandler);
 }());
