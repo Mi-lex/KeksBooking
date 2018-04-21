@@ -46,6 +46,7 @@
     renderMapCards(mapCardList);
     mapPinRender();
     window.addMapCardHandler();
+    mapFilterHandler();
   }
 
   window.activeMapFeatures = function activeMapFeatures() {
