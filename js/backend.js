@@ -44,7 +44,7 @@
     xml.addEventListener('timeout', timeoutHandler);
     xml.addEventListener('error', errorHanler);
     xml.addEventListener('load', loadHandler);
-    xml.open('GET', url, false);
+    xml.open('GET', url, true);
 
     xml.send();
 

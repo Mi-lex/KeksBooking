@@ -1,7 +1,6 @@
 'use strict';
 
 (function formHandlers() {
-  // Rename that mainForm
   var noticeForm = document.querySelector('.notice__form'),
       typeInput = noticeForm.querySelector('#type'),
       priceInput = noticeForm.querySelector('#price'),
@@ -49,7 +48,6 @@
           siblingSelectOptions[i].removeAttribute('disabled');
       }
     }
-
   }
 
   function onFormSubmitHandler(e) {
