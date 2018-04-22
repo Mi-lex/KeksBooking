@@ -41,7 +41,7 @@
     alert(message);
   }
 
-  // Show cards, then add make them interactive and active filters
+  // Show cards, then make them interactive and active filters
   function onSuccess(mapCardList) {
     renderMapCards(mapCardList);
     mapPinRender();
