@@ -1,13 +1,20 @@
 'use strict';
 
 (function mapCardRender() {
+  // The url for ajax to get the object for rendering
   var url = 'https://js.dump.academy/keksobooking/data';
 
+  /**
+   * Render the cards on the map
+   * @param {array} mapCardList - the array of objects to be rendered
+   * @returns {void}
+   */
   function renderMapCards(mapCardList) {
     var fragment = document.createDocumentFragment(),
         similarMapCardTemplate = document.querySelector('template').content.
       querySelector('.map__card');
 
+    // Clone card item, which is div, full the card with information from object
     mapCardList.forEach((el) => {
       var mapCardItem = similarMapCardTemplate.cloneNode(true);
       mapCardItem.querySelector('h3').textContent = el.offer.title;
@@ -33,6 +40,7 @@
       fragment.appendChild(mapCardItem);
     });
 
+    // Finally append list of cards in the map div
     window.map.appendChild(fragment);
     window.cards = window.map.querySelectorAll('.map__card');
   }
@@ -41,7 +49,13 @@
     alert(message);
   }
 
-  // Show cards, then make them interactive and active filters
+  /**
+   * Show cards, then make them interactive, render pins and active the filters.
+   * mapPinRender and mapFilterHandler are placed in anothers modules
+   * Need to rewrite the function using promises.
+   * @param {array} mapCardList - the array of objects to be rendered
+   * @return {void}
+   */
   function onSuccess(mapCardList) {
     renderMapCards(mapCardList);
     mapPinRender();
@@ -71,6 +85,11 @@
     });
   }
 
+  /**
+   * Use delegation to close or open card depending on user's target
+   * @param {object} e - event
+   * @return {void}
+   */
   function onMapClickHandler(e) {
     if (e.target.closest('.map__pin') && !e.target.closest('.map__pin--main')) {
       let currentMapPin = e.target.closest('.map__pin'),
