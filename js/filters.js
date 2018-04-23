@@ -10,6 +10,14 @@ function mapFilterHandler() {
       pinsContainer = window.map.querySelector('.map__pins'),
       pins = pinsContainer.querySelectorAll(".map__pin:not(.map__pin--main)");
 
+  /**
+   * Shows or hides pins depending on filters that user choses.
+   * Takes out pin container before filtering. Each iteration pin gets shown,
+   * then it makes sure whether the pin and related card apply the filters.
+   * if card&pin don't apply a filter, the pin gets hidden
+   * and current iteration breaks immediately.
+   * @returns {void}
+   */
   function updatePins() {
     window.map.removeChild(pinsContainer);
 
