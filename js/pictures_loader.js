@@ -7,11 +7,17 @@
       formAvatar = noticePhoto.querySelector('img'),
       mapAvatar = window.map.querySelector('.map__pin--main img');
 
+  // Inserts read file into the element
   function insertImg(imgElem, imgFile) {
     imgElem.setAttribute('src', event.target.result);
     imgElem.setAttribute('title', imgFile.name);
   }
 
+  /**
+   * Returns the actual handler with closure over the loadHandler.
+   * @param {object} file object;
+   * @returns {function} innerLoadHandler, the actual handler
+   */
   function loadHandler(file) {
     function innerLoadHandler(event) {
       insertImg(mapAvatar, file);
@@ -84,8 +90,14 @@
         }
     photoContainer.classList.add('photo-container');
     photoContainer.style.width = "400px";
-    // Доработать эту функцию. Создать элемент картинку, обработать и вставить
+
+    /**
+     * Returns the actual handler with closure over the loadHandler.
+     * @param {object} file object
+     * @returns {function} the actual handler
+     */
     function loadHandler(file) {
+      // Renders img file and appends it in photo container (div)
       function innerLoadHandler(event) {
         var imgElem = document.createElement('IMG');
         imgElem.setAttribute('alt', ImageParam.alt);

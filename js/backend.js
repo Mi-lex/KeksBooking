@@ -3,6 +3,7 @@
 'use strict';
 
 (function serverOperations() {
+  // Method for get AJAX request
   window.load = function load(url, onLoad, onError) {
     var xml = new XMLHttpRequest();
 
@@ -47,9 +48,9 @@
     xml.open('GET', url, true);
 
     xml.send();
-
   };
 
+  // Method for post AJAX request
   window.save = function save(url, data, onLoad, onError) {
     var xml = new XMLHttpRequest();
 

@@ -5,15 +5,7 @@
       noticeForm = document.querySelector('.notice__form'),
       addressInput = noticeForm.querySelector('#address');
 
-  window.getElemCoords = function getElemCoords(elem) {
-    var coordsObj = elem.getBoundingClientRect();
-
-    return {
-      left: coordsObj.left,
-      top: coordsObj.top
-    }
-  }
-
+  // Shows map and make main pin draggable
   function activeMap() {
     window.map.classList.remove('map--faded');
     mapMainPin.addEventListener('mousedown', onMainPinMousedownHandler);
@@ -24,13 +16,14 @@
   }
 
   function onMainPinMouseupHandler() {
-    // Should change soon
+    // Rewrite using promises or callbacks
     activeMap();
     window.activeMapFeatures();
     activeForm();
     mapMainPin.removeEventListener('mouseup', onMainPinMouseupHandler);
   }
 
+  // Drag handler
   function onMainPinMousedownHandler (ev) {
     var mainPinCoords = window.getElemCoords(mapMainPin),
         mapCoords = window.getElemCoords(window.map),
@@ -46,13 +39,13 @@
         left: moveEvent.clientX - mapCoords.left - shift.x,
         top: moveEvent.clientY - mapCoords.top - shift.y
       },
-          rightEdge = window.map.offsetWidth,
+          rightEdge = window.map.offsetWidth - 40,
           bottomEdge = 650;
 
       if (newPinCoords.left > rightEdge) {
         newPinCoords.left = rightEdge;
-      } else if (newPinCoords.left < 50) {
-          newPinCoords.left = 50;
+      } else if (newPinCoords.left < 40) {
+          newPinCoords.left = 40;
       }
 
       if (newPinCoords.top > bottomEdge) {
@@ -82,6 +75,7 @@
   mapMainPin.addEventListener('mouseup', onMainPinMouseupHandler);
 }());
 
+// Module for rendering several pins. It's executed in card module.
 function mapPinRender() {
   var mapPinsContainer = window.map.querySelector('.map__pins');
 

@@ -13,6 +13,15 @@ window.map = document.querySelector('.map');
     return `rgba(${window.getRandInt(0, 255)}, ${window.getRandInt(0, 255)}, ${window.getRandInt(0, 255)}`;
   }
 
+  window.getElemCoords = function getElemCoords(elem) {
+    var coordsObj = elem.getBoundingClientRect();
+
+    return {
+      left: coordsObj.left,
+      top: coordsObj.top
+    }
+  }
+
   window.debounce = function debounce(action, delayTime) {
     clearTimeout(window.debounceTimer);
 

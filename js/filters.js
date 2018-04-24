@@ -15,7 +15,7 @@ function mapFilterHandler() {
    * Takes out pin container before filtering. Each iteration pin gets shown,
    * then it makes sure whether the pin and related card apply the filters.
    * if card&pin don't apply a filter, the pin gets hidden
-   * and current iteration breaks immediately.
+   * and current iteration breaks immediately (continue).
    * @returns {void}
    */
   function updatePins() {
@@ -90,7 +90,11 @@ function mapFilterHandler() {
           continue;
       }
 
-      // Housing features filters
+      /**
+       * Housing features filter.
+       * Each iteration checks whether card has the li element with the
+       * same class name as selected feature option.
+       */
       for (let j = 0; j < selectedFeatures.length; j++) {
         if (!cardFeatures.getElementsByClassName(selectedFeatures[j].className).length) {
           window.hideItem(currPin);
@@ -101,6 +105,7 @@ function mapFilterHandler() {
     window.map.insertBefore(pinsContainer, window.map.children[0]);
   }
 
+  // Whole filter form was chosen for change event listening.
   filters.addEventListener('change', () => {
     window.debounce(updatePins, 500);
   });
