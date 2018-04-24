@@ -16,11 +16,14 @@
   }
 
   function onMainPinMouseupHandler() {
-    // Rewrite using promises or callbacks
-    activeMap();
-    window.activeMapFeatures();
-    activeForm();
-    mapMainPin.removeEventListener('mouseup', onMainPinMouseupHandler);
+    var pinMouseUpSequence = new Promise((resolve) => resolve());
+    pinMouseUpSequence.
+      then(activeMap).
+      then(window.activeMapFeatures).
+      then(activeForm).
+      then(() => {
+        mapMainPin.removeEventListener('mouseup', onMainPinMouseupHandler)
+      });
   }
 
   // Drag handler
@@ -76,7 +79,7 @@
 }());
 
 // Module for rendering several pins. It's executed in card module.
-function mapPinRender() {
+(function mapPinRender() {
   var mapPinsContainer = window.map.querySelector('.map__pins');
 
   function renderMapPins() {
@@ -99,5 +102,5 @@ function mapPinRender() {
     mapPinsContainer.appendChild(fragment);
   }
 
-  renderMapPins();
-}
+  window.renderMapPins = renderMapPins;
+}())

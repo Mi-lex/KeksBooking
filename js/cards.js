@@ -60,7 +60,7 @@
         renderMapCards,
         onError
       ).
-      then(mapPinRender).
+      then(window.renderMapPins).
       then(window.addMapCardHandler).
       then(mapFilterHandler);
   }
