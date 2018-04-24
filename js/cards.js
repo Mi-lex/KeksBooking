@@ -52,19 +52,17 @@
   /**
    * Show cards, then make them interactive, render pins and active the filters.
    * mapPinRender and mapFilterHandler are placed in anothers modules
-   * Need to rewrite the function using promises.
-   * @param {array} mapCardList - the array of objects to be rendered
    * @return {void}
    */
-  function onSuccess(mapCardList) {
-    renderMapCards(mapCardList);
-    mapPinRender();
-    window.addMapCardHandler();
-    mapFilterHandler();
-  }
-
   window.activeMapFeatures = function activeMapFeatures() {
-    window.load(url, onSuccess, onError);
+    window.load(url).
+      then(
+        renderMapCards,
+        onError
+      ).
+      then(mapPinRender).
+      then(window.addMapCardHandler).
+      then(mapFilterHandler);
   }
 }());
 
