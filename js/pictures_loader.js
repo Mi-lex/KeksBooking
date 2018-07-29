@@ -19,7 +19,7 @@
    * @returns {function} innerLoadHandler, the actual handler
    */
   function loadHandler(file) {
-    function innerLoadHandler(event) {
+    function innerLoadHandler() {
       insertImg(mapAvatar, file);
       insertImg(formAvatar, file);
     }
